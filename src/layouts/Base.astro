@@ -56,11 +56,20 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       gap: 12px;
     }
     .site-header .logo-text {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
       font-family: 'Zen Maru Gothic', sans-serif;
       font-size: 0.85rem;
       color: var(--ink);
       opacity: 0.75;
       text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .site-header .logo-text:hover { opacity: 1; }
+    .logo-flower {
+      color: var(--rose);
+      flex-shrink: 0;
     }
     .furigana-toggle {
       font-size: 0.75rem;
@@ -89,7 +98,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 <body class="furigana-off">
 
 <header class="site-header">
-  <a href={`${base}/`} class="logo-text">FIDIA PARTNERS</a>
+  <a href={`${base}/`} class="logo-text">
+    <svg class="logo-flower" viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true">
+      <ellipse cx="12" cy="6" rx="2.8" ry="4.5"/>
+      <ellipse cx="12" cy="18" rx="2.8" ry="4.5"/>
+      <ellipse cx="6" cy="12" rx="4.5" ry="2.8"/>
+      <ellipse cx="18" cy="12" rx="4.5" ry="2.8"/>
+      <circle cx="12" cy="12" r="2.5"/>
+    </svg>
+    FIDIA PARTNERS
+  </a>
   <button class="furigana-toggle" id="furiganaToggle" aria-pressed="false">
     ふりがな　オン
   </button>

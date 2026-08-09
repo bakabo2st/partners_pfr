@@ -14,7 +14,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   <!-- ヒーロー -->
   <section class="hero">
     <div class="hero-inner">
-      <p class="hero-eyebrow">FIDIA PARTNERS</p>
+      <p class="hero-eyebrow">
+        <svg class="eyebrow-flower" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
+          <ellipse cx="12" cy="6" rx="2.8" ry="4.5"/>
+          <ellipse cx="12" cy="18" rx="2.8" ry="4.5"/>
+          <ellipse cx="6" cy="12" rx="4.5" ry="2.8"/>
+          <ellipse cx="18" cy="12" rx="4.5" ry="2.8"/>
+          <circle cx="12" cy="12" r="2.5"/>
+        </svg>
+        FIDIA PARTNERS
+      </p>
       <h1 class="hero-copy">
         自分のことを少し知る。<br />
         その先に、<ruby>働<rt>はたら</rt></ruby>き方が見えてくる。
@@ -32,7 +41,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
     <!-- 01 働き方の見本 -->
     <section class="section">
-      <SectionHeader number="01" title="こんな働き方があります" />
+      <SectionHeader title="こんな働き方があります" />
       <div class="cards-grid">
         {workStyles.map(ws => (
           <WorkStyleCard
@@ -49,7 +58,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
     <!-- 02 配慮の例 -->
     <section class="section">
-      <SectionHeader number="02" title="こんな相談をしていいです" />
+      <SectionHeader title="こんな相談をしていいです" />
       <div class="prose-stack">
         {accommodations.map(async (ac) => {
           const { Content } = await render(ac);
@@ -78,7 +87,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
     <!-- 読みもの -->
     <section class="section">
-      <SectionHeader number="03" title="読みもの" />
+      <SectionHeader title="読みもの" />
       <div class="prose-stack">
         {columns.map(async (col) => {
           const { Content } = await render(col);
@@ -95,7 +104,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
     <!-- 相談 -->
     <section class="section section-consult">
-      <SectionHeader number="04" title="気になったら相談していいです" />
+      <SectionHeader title="気になったら相談していいです" />
       <div class="consult-inner">
         <p>
           「この仕事、どんな感じか聞いてみたい」<br />
@@ -114,29 +123,38 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 <style>
   .hero {
-    padding: 56px 24px 48px;
+    padding: 56px 24px 56px;
     border-bottom: 1px solid var(--line);
+    background-image: radial-gradient(ellipse 55% 90% at 100% 40%, rgba(224, 168, 168, 0.18) 0%, transparent 70%);
   }
   .hero-inner {
     max-width: var(--max-text);
     margin: 0 auto;
   }
   .hero-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 7px;
     font-size: 0.75rem;
     letter-spacing: 0.15em;
     color: var(--rose);
-    margin-bottom: 16px;
+    margin-bottom: 20px;
+  }
+  .eyebrow-flower {
+    flex-shrink: 0;
+    opacity: 0.9;
   }
   .hero-copy {
     font-size: clamp(1.5rem, 4vw, 2.1rem);
     font-weight: 700;
-    line-height: 1.55;
+    line-height: 1.6;
     margin-bottom: 28px;
   }
   .hero-desc {
     font-size: 0.95rem;
-    line-height: 2;
-    opacity: 0.85;
+    line-height: 2.1;
+    opacity: 0.8;
+    max-width: 560px;
   }
 
   .main-content { padding: 0 24px 60px; }
@@ -208,35 +226,55 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     text-decoration: none;
     color: var(--ink);
     border: 1.5px solid var(--line);
+    border-left: 4px solid var(--rose);
     border-radius: 14px;
     background: #fff;
-    transition: border-color 0.2s, background 0.2s;
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .jobs-banner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 80% at 95% 50%, rgba(224, 168, 168, 0.13) 0%, transparent 70%);
+    pointer-events: none;
   }
   .jobs-banner:hover {
     border-color: var(--rose);
     background: var(--rose-tint);
+    transform: translateY(-2px);
   }
   .jobs-banner-inner {
     padding: 28px 32px;
     display: flex;
     flex-direction: column;
     gap: 8px;
+    position: relative;
+    z-index: 1;
   }
   .jobs-banner-title {
     font-family: 'Zen Maru Gothic', sans-serif;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-weight: 700;
   }
   .jobs-banner-desc {
-    font-size: 0.88rem;
-    line-height: 1.8;
+    font-size: 0.9rem;
+    line-height: 1.9;
     opacity: 0.7;
   }
   .jobs-banner-cta {
-    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
     font-size: 0.85rem;
     color: var(--ink);
     opacity: 0.55;
+    transition: opacity 0.15s, gap 0.15s;
   }
-  .jobs-banner:hover .jobs-banner-cta { opacity: 1; }
+  .jobs-banner:hover .jobs-banner-cta {
+    opacity: 1;
+    gap: 10px;
+  }
 </style>
