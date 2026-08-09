@@ -7,6 +7,7 @@ import { getCollection, render } from 'astro:content';
 const workStyles = await getCollection('workStyles');
 const accommodations = await getCollection('accommodations');
 const columns = await getCollection('columns');
+const voices = await getCollection('voices');
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
@@ -102,6 +103,25 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       </div>
     </section>
 
+    <!-- 先輩の声 -->
+    {voices.length > 0 && (
+      <section class="section">
+        <SectionHeader title="先輩の声" />
+        <div class="voices-grid">
+          {voices.map(async (v) => {
+            const { Content } = await render(v);
+            return (
+              <blockquote class="voice-card">
+                <p class="voice-quote">「{v.data.quote}」</p>
+                <footer class="voice-who">{v.data.who}</footer>
+                <div class="voice-body prose"><Content /></div>
+              </blockquote>
+            );
+          })}
+        </div>
+      </section>
+    )}
+
     <!-- 相談 -->
     <section class="section section-consult">
       <SectionHeader title="気になったら相談していいです" />
@@ -188,6 +208,45 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     border-radius: 20px;
     display: inline-block;
     margin-bottom: 8px;
+  }
+
+  /* 先輩の声 */
+  .voices-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  @media (min-width: 640px) {
+    .voices-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .voice-card {
+    background: var(--rose-tint);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .voice-quote {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 0.97rem;
+    font-weight: 500;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+  .voice-who {
+    font-size: 0.74rem;
+    opacity: 0.55;
+    letter-spacing: 0.04em;
+  }
+  .voice-body {
+    font-size: 0.85rem;
+    line-height: 1.8;
+    opacity: 0.75;
+    border-top: 1px solid var(--line);
+    padding-top: 10px;
+    margin-top: 2px;
   }
 
   .section-note {
