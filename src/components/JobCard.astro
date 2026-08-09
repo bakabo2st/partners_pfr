@@ -1,0 +1,86 @@
+---
+interface Props {
+  jobNumber: string;
+  title: string;
+  company: string;
+  location: string;
+  employmentType: string;
+  hoursText: string;
+  detailUrl: string;
+  matchedConditions: string;
+}
+const { jobNumber, title, company, location, employmentType, hoursText, detailUrl, matchedConditions } = Astro.props;
+
+const hasDetail = detailUrl && detailUrl.startsWith('http');
+---
+<article class="job-card">
+  <div class="job-meta">
+    <span class="job-type">{employmentType || 'パートタイム'}</span>
+    {matchedConditions && (
+      <span class="job-match" aria-label="マッチした条件">{matchedConditions}</span>
+    )}
+  </div>
+  <h3 class="job-title">{title}</h3>
+  <dl class="job-info">
+    {company && company !== '（事業所の意向により公開していません）' && (
+      <div><dt>事業所</dt><dd>{company}</dd></div>
+    )}
+    {location && <div><dt>勤務地</dt><dd>{location}</dd></div>}
+    {hoursText && <div><dt>就業時間</dt><dd>{hoursText}</dd></div>}
+  </dl>
+  {hasDetail && (
+    <a class="hw-link" href={detailUrl} target="_blank" rel="noopener noreferrer">
+      ハローワークで詳細を確認する
+      <span aria-hidden="true">→</span>
+    </a>
+  )}
+</article>
+
+<style>
+  .job-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 22px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .job-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .job-type {
+    font-size: 0.72rem;
+    background: var(--rose-tint);
+    border-radius: 20px;
+    padding: 3px 10px;
+  }
+  .job-match {
+    font-size: 0.72rem;
+    color: var(--ink);
+    opacity: 0.6;
+  }
+  .job-title {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+  .job-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.82rem;
+  }
+  .job-info div { display: flex; gap: 8px; }
+  .job-info dt { opacity: 0.5; min-width: 4em; }
+  .hw-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    font-size: 0.82rem;
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--rose);
+  }
+  .hw-link:hover { opacity: 0.75; }
+</style>

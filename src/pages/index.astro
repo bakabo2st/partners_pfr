@@ -1,0 +1,229 @@
+---
+import Base from '../layouts/Base.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import WorkStyleCard from '../components/WorkStyleCard.astro';
+import JobCard from '../components/JobCard.astro';
+import { getCollection, render } from 'astro:content';
+
+const workStyles = await getCollection('workStyles');
+const accommodations = await getCollection('accommodations');
+const columns = await getCollection('columns');
+
+let jobs: any[] = [];
+try {
+  const raw = await import('../data/jobs.json');
+  jobs = Array.isArray(raw.default) ? raw.default : [];
+} catch {
+  // jobs.json がまだない場合はスキップ
+}
+
+const sectionOffset = jobs.length > 0 ? 1 : 0;
+---
+<Base>
+  <!-- ヒーロー -->
+  <section class="hero">
+    <div class="hero-inner">
+      <p class="hero-eyebrow">FIDIA PARTNERS</p>
+      <h1 class="hero-copy">
+        自分のことを少し知る。<br />
+        その先に、<ruby>働<rt>はたら</rt></ruby>き方が見えてくる。
+      </h1>
+      <p class="hero-desc">
+        このサイトは、今すぐ<ruby>就職<rt>しゅうしょく</rt></ruby>を決めるためのものではありません。<br />
+        体調のこと、<ruby>暮<rt>く</rt></ruby>らしのこと、今の作業のこと、仕事のこと。<br />
+        少しずつ知りながら、「自分はどうしたいのか」「どんな<ruby>働<rt>はたら</rt></ruby>き方なら考えられそうか」を、ゆっくり見つけていくための場所です。<br />
+        まだ言葉になっていない気持ちも、少しずつでだいじょうぶです。
+      </p>
+    </div>
+  </section>
+
+  <main class="main-content">
+
+    <!-- 01 働き方の見本 -->
+    <section class="section">
+      <SectionHeader number="01" title="こんな働き方があります" />
+      <div class="cards-grid">
+        {workStyles.map(ws => (
+          <WorkStyleCard
+            title={ws.data.title}
+            tags={ws.data.tags}
+            hours={ws.data.hours}
+            days={ws.data.days}
+            place={ws.data.place}
+            summary={ws.data.summary}
+          />
+        ))}
+      </div>
+    </section>
+
+    <!-- 02 配慮の例 -->
+    <section class="section">
+      <SectionHeader number="02" title="こんな相談をしていいです" />
+      <div class="prose-stack">
+        {accommodations.map(async (ac) => {
+          const { Content } = await render(ac);
+          return (
+            <div class="prose-card">
+              <h3>{ac.data.title}</h3>
+              <div class="prose"><Content /></div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- 03 実際の求人（jobs.json があるときだけ） -->
+    {jobs.length > 0 && (
+      <section class="section">
+        <SectionHeader number="03" title="今ある仕事の例" />
+        <p class="section-note">
+          ハローワークに<ruby>掲載<rt>けいさい</rt></ruby>されている求人の例です。詳細はハローワークでご確認ください。
+        </p>
+        <div class="cards-grid">
+          {jobs.slice(0, 6).map((job: any) => (
+            <JobCard
+              jobNumber={job.job_number ?? ''}
+              title={job.title ?? ''}
+              company={job.company ?? ''}
+              location={job.location ?? ''}
+              employmentType={job.employment_type ?? ''}
+              hoursText={job.hours_text ?? ''}
+              detailUrl={job.detail_url ?? ''}
+              matchedConditions={job.matched_conditions ?? ''}
+            />
+          ))}
+        </div>
+        <p class="hw-note">
+          <a href="https://www.hellowork.mhlw.go.jp/" target="_blank" rel="noopener noreferrer">
+            ハローワークでほかの求人も探す →
+          </a>
+        </p>
+      </section>
+    )}
+
+    <!-- 読みもの -->
+    <section class="section">
+      <SectionHeader number={`0${3 + sectionOffset}`} title="読みもの" />
+      <div class="prose-stack">
+        {columns.map(async (col) => {
+          const { Content } = await render(col);
+          return (
+            <div class="prose-card">
+              {col.data.kind && <span class="col-kind">{col.data.kind}</span>}
+              <h3>{col.data.title}</h3>
+              <div class="prose"><Content /></div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- 相談 -->
+    <section class="section section-consult">
+      <SectionHeader number={`0${4 + sectionOffset}`} title="気になったら相談していいです" />
+      <div class="consult-inner">
+        <p>
+          「この仕事、どんな感じか聞いてみたい」<br />
+          「こういう働き方、自分にできるかな」<br />
+          そう思ったら、スタッフに声をかけてみてください。答えを出す必要はありません。
+        </p>
+        <p class="consult-example">
+          たとえばこんな一言でも大丈夫です：<br />
+          <em>「ちょっと気になることがあって…」</em>
+        </p>
+      </div>
+    </section>
+
+  </main>
+</Base>
+
+<style>
+  .hero {
+    padding: 56px 24px 48px;
+    border-bottom: 1px solid var(--line);
+  }
+  .hero-inner {
+    max-width: var(--max-text);
+    margin: 0 auto;
+  }
+  .hero-eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    color: var(--rose);
+    margin-bottom: 16px;
+  }
+  .hero-copy {
+    font-size: clamp(1.5rem, 4vw, 2.1rem);
+    font-weight: 700;
+    line-height: 1.55;
+    margin-bottom: 28px;
+  }
+  .hero-desc {
+    font-size: 0.95rem;
+    line-height: 2;
+    opacity: 0.85;
+  }
+
+  .main-content { padding: 0 24px 60px; }
+  .section {
+    max-width: 860px;
+    margin: 64px auto 0;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  @media (min-width: 640px) {
+    .cards-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .prose-stack { display: flex; flex-direction: column; gap: 16px; }
+  .prose-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .prose-card h3 { font-size: 1rem; margin-bottom: 10px; }
+  .prose { font-size: 0.9rem; line-height: 1.9; }
+  .col-kind {
+    font-size: 0.7rem;
+    background: var(--rose-tint);
+    padding: 2px 10px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+
+  .section-note {
+    font-size: 0.82rem;
+    opacity: 0.6;
+    margin-bottom: 20px;
+    line-height: 1.7;
+  }
+  .hw-note {
+    margin-top: 20px;
+    font-size: 0.85rem;
+  }
+  .hw-note a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--rose);
+  }
+
+  .consult-inner {
+    background: var(--rose-tint);
+    border-radius: 12px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    font-size: 0.95rem;
+    line-height: 2;
+  }
+  .consult-example { font-size: 0.9rem; opacity: 0.8; }
+  .consult-example em { font-style: normal; font-weight: 500; }
+</style>
