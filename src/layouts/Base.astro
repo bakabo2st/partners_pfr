@@ -3,7 +3,7 @@ interface Props {
   title?: string;
 }
 const { title = '働き方をさがす' } = Astro.props;
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 <!doctype html>
 <html lang="ja">
@@ -89,7 +89,7 @@ const base = import.meta.env.BASE_URL;
 <body class="furigana-off">
 
 <header class="site-header">
-  <a href={base} class="logo-text">FIDIA PARTNERS</a>
+  <a href={`${base}/`} class="logo-text">FIDIA PARTNERS</a>
   <button class="furigana-toggle" id="furiganaToggle" aria-pressed="false">
     ふりがな　オン
   </button>

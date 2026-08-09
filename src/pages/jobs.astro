@@ -13,7 +13,7 @@ try {
 
 const guides = await getCollection('guides');
 
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 // 外部求人サービス（URLは運営者が確認・更新してください）
 const externalLinks = [
@@ -41,7 +41,7 @@ const externalLinks = [
   <main class="main-content">
 
     <div class="page-header">
-      <a href={base} class="back-link">← もどる</a>
+      <a href={`${base}/`} class="back-link">← もどる</a>
       <h1>実際にある仕事を、少し見てみる</h1>
       <p class="page-desc">
         気になったものがあれば、スタッフに声をかけてみてください。<br />
@@ -53,7 +53,7 @@ const externalLinks = [
     {guides.length > 0 && (
       <div class="guides-row">
         {guides.map(g => (
-          <a href={`${base}guides/${g.id}/`} class="guide-chip">
+          <a href={`${base}/guides/${g.id}/`} class="guide-chip">
             📄 {g.data.title}
           </a>
         ))}
