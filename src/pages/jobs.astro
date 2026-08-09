@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import JobCard from '../components/JobCard.astro';
-import SectionHeader from '../components/SectionHeader.astro';
+import { getCollection } from 'astro:content';
 
 let jobs: any[] = [];
 try {
@@ -11,21 +11,59 @@ try {
   // jobs.json がまだない場合はスキップ
 }
 
+const guides = await getCollection('guides');
+
 const base = import.meta.env.BASE_URL;
+
+// 外部求人サービス（URLは運営者が確認・更新してください）
+const externalLinks = [
+  {
+    name: 'ハローワーク 障害者求人',
+    desc: '公共職業安定所が運営する求人検索サービスです。障害者専用の求人を探せます。',
+    url: 'https://jsite.mhlw.go.jp/osaka-hellowork/kanren/syougaisya_kantan_kensaku.html',
+    label: 'ハローワーク インターネットサービス',
+  },
+  {
+    name: 'atGP',
+    desc: '障害のある方向けの転職・就職支援サービスです。',
+    url: 'https://atgp.jp/',
+    label: 'atGP（アットジーピー）',
+  },
+  {
+    name: 'かべなし求人ナビ',
+    desc: '障害や難病のある方向けの求人情報を掲載しています。',
+    url: 'https://kabenashi.com/',  // ← 正しいURLを確認してください
+    label: 'かべなし求人ナビ',
+  },
+];
 ---
 <Base title="実際にある仕事を見てみる">
   <main class="main-content">
+
     <div class="page-header">
       <a href={base} class="back-link">← もどる</a>
       <h1>実際にある仕事を、少し見てみる</h1>
       <p class="page-desc">
-        ハローワークに<ruby>掲載<rt>けいさい</rt></ruby>されている求人の例です。<br />
-        気になったものがあれば、スタッフに声をかけてみてください。
+        気になったものがあれば、スタッフに声をかけてみてください。<br />
+        見るだけでも、なんとなく眺めるだけでもだいじょうぶです。
       </p>
     </div>
 
+    <!-- 求人票の見方へのリンク -->
+    {guides.length > 0 && (
+      <div class="guides-row">
+        {guides.map(g => (
+          <a href={`${base}guides/${g.id}/`} class="guide-chip">
+            📄 {g.data.title}
+          </a>
+        ))}
+      </div>
+    )}
+
+    <!-- 今週の求人 -->
     {jobs.length > 0 ? (
       <section class="section">
+        <h2 class="section-title">今週の求人</h2>
         <div class="cards-grid">
           {jobs.map((job: any) => (
             <JobCard
@@ -40,11 +78,6 @@ const base = import.meta.env.BASE_URL;
             />
           ))}
         </div>
-        <p class="hw-note">
-          <a href="https://www.hellowork.mhlw.go.jp/" target="_blank" rel="noopener noreferrer">
-            ハローワークでほかの求人も探す →
-          </a>
-        </p>
       </section>
     ) : (
       <div class="empty">
@@ -52,15 +85,40 @@ const base = import.meta.env.BASE_URL;
         <p>スタッフに相談してみてください。</p>
       </div>
     )}
+
+    <!-- 外部サービスリンク -->
+    <section class="section">
+      <h2 class="section-title">ほかのサービスで探してみる</h2>
+      <p class="section-note">
+        ハローワーク以外にも、障害のある方向けの求人サービスがあります。<br />
+        それぞれ特徴があるので、のぞいてみるだけでも参考になるかもしれません。
+      </p>
+      <div class="ext-links">
+        {externalLinks.map(link => (
+          <a
+            href={link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="ext-card"
+          >
+            <span class="ext-name">{link.name}</span>
+            <span class="ext-label">{link.label}</span>
+            <span class="ext-desc">{link.desc}</span>
+            <span class="ext-arrow" aria-hidden="true">→</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
   </main>
 </Base>
 
 <style>
-  .main-content { padding: 0 24px 60px; }
+  .main-content { padding: 0 24px 80px; }
 
   .page-header {
     max-width: 680px;
-    margin: 48px auto 48px;
+    margin: 48px auto 36px;
   }
   .back-link {
     display: inline-block;
@@ -71,7 +129,6 @@ const base = import.meta.env.BASE_URL;
     margin-bottom: 20px;
   }
   .back-link:hover { opacity: 1; }
-
   h1 {
     font-size: clamp(1.3rem, 3.5vw, 1.7rem);
     font-weight: 700;
@@ -84,7 +141,46 @@ const base = import.meta.env.BASE_URL;
     opacity: 0.75;
   }
 
-  .section { max-width: 860px; margin: 0 auto; }
+  /* ガイドチップ */
+  .guides-row {
+    max-width: 860px;
+    margin: 0 auto 36px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .guide-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    color: var(--ink);
+    background: var(--rose-tint);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 6px 16px;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .guide-chip:hover { background: var(--line); }
+
+  /* セクション */
+  .section { max-width: 860px; margin: 48px auto 0; }
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  .section-note {
+    font-size: 0.85rem;
+    line-height: 1.9;
+    opacity: 0.65;
+    margin-bottom: 20px;
+  }
+
+  /* 求人グリッド */
   .cards-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -93,16 +189,57 @@ const base = import.meta.env.BASE_URL;
   @media (min-width: 640px) {
     .cards-grid { grid-template-columns: repeat(2, 1fr); }
   }
-  .hw-note {
-    margin-top: 24px;
-    font-size: 0.85rem;
+
+  /* 外部リンクカード */
+  .ext-links {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
-  .hw-note a {
+  @media (min-width: 640px) {
+    .ext-links { grid-template-columns: repeat(2, 1fr); }
+  }
+  .ext-card {
+    display: grid;
+    grid-template-areas:
+      "name arrow"
+      "label arrow"
+      "desc desc";
+    grid-template-columns: 1fr auto;
+    gap: 4px 12px;
+    padding: 20px 22px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    text-decoration: none;
     color: var(--ink);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    text-decoration-color: var(--rose);
+    transition: border-color 0.15s, background 0.15s;
   }
+  .ext-card:hover { border-color: var(--rose); background: var(--rose-tint); }
+  .ext-name {
+    grid-area: name;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+  .ext-label {
+    grid-area: label;
+    font-size: 0.72rem;
+    opacity: 0.5;
+  }
+  .ext-desc {
+    grid-area: desc;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    opacity: 0.75;
+    margin-top: 8px;
+  }
+  .ext-arrow {
+    grid-area: arrow;
+    align-self: center;
+    font-size: 1rem;
+    opacity: 0.4;
+  }
+  .ext-card:hover .ext-arrow { opacity: 1; }
 
   .empty {
     max-width: 680px;
