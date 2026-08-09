@@ -2,22 +2,13 @@
 import Base from '../layouts/Base.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 import WorkStyleCard from '../components/WorkStyleCard.astro';
-import JobCard from '../components/JobCard.astro';
 import { getCollection, render } from 'astro:content';
 
 const workStyles = await getCollection('workStyles');
 const accommodations = await getCollection('accommodations');
 const columns = await getCollection('columns');
 
-let jobs: any[] = [];
-try {
-  const raw = await import('../data/jobs.json');
-  jobs = Array.isArray(raw.default) ? raw.default : [];
-} catch {
-  // jobs.json がまだない場合はスキップ
-}
-
-const sectionOffset = jobs.length > 0 ? 1 : 0;
+const base = import.meta.env.BASE_URL;
 ---
 <Base>
   <!-- ヒーロー -->
@@ -72,38 +63,22 @@ const sectionOffset = jobs.length > 0 ? 1 : 0;
       </div>
     </section>
 
-    <!-- 03 実際の求人（jobs.json があるときだけ） -->
-    {jobs.length > 0 && (
-      <section class="section">
-        <SectionHeader number="03" title="今ある仕事の例" />
-        <p class="section-note">
-          ハローワークに<ruby>掲載<rt>けいさい</rt></ruby>されている求人の例です。詳細はハローワークでご確認ください。
-        </p>
-        <div class="cards-grid">
-          {jobs.slice(0, 6).map((job: any) => (
-            <JobCard
-              jobNumber={job.job_number ?? ''}
-              title={job.title ?? ''}
-              company={job.company ?? ''}
-              location={job.location ?? ''}
-              employmentType={job.employment_type ?? ''}
-              hoursText={job.hours_text ?? ''}
-              detailUrl={job.detail_url ?? ''}
-              matchedConditions={job.matched_conditions ?? ''}
-            />
-          ))}
+    <!-- 03 求人バナー（1クッション） -->
+    <section class="section">
+      <a href={`${base}jobs/`} class="jobs-banner" aria-label="実際にある仕事を見てみるページへ">
+        <div class="jobs-banner-inner">
+          <p class="jobs-banner-title">実際にある仕事を、少し見てみる</p>
+          <p class="jobs-banner-desc">
+            気が向いたときに、のぞくだけでだいじょうぶです。
+          </p>
+          <span class="jobs-banner-cta">見てみる →</span>
         </div>
-        <p class="hw-note">
-          <a href="https://www.hellowork.mhlw.go.jp/" target="_blank" rel="noopener noreferrer">
-            ハローワークでほかの求人も探す →
-          </a>
-        </p>
-      </section>
-    )}
+      </a>
+    </section>
 
     <!-- 読みもの -->
     <section class="section">
-      <SectionHeader number={`0${3 + sectionOffset}`} title="読みもの" />
+      <SectionHeader number="03" title="読みもの" />
       <div class="prose-stack">
         {columns.map(async (col) => {
           const { Content } = await render(col);
@@ -120,7 +95,7 @@ const sectionOffset = jobs.length > 0 ? 1 : 0;
 
     <!-- 相談 -->
     <section class="section section-consult">
-      <SectionHeader number={`0${4 + sectionOffset}`} title="気になったら相談していいです" />
+      <SectionHeader number="04" title="気になったら相談していいです" />
       <div class="consult-inner">
         <p>
           「この仕事、どんな感じか聞いてみたい」<br />
@@ -226,4 +201,42 @@ const sectionOffset = jobs.length > 0 ? 1 : 0;
   }
   .consult-example { font-size: 0.9rem; opacity: 0.8; }
   .consult-example em { font-style: normal; font-weight: 500; }
+
+  /* 求人バナー */
+  .jobs-banner {
+    display: block;
+    text-decoration: none;
+    color: var(--ink);
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .jobs-banner:hover {
+    border-color: var(--rose);
+    background: var(--rose-tint);
+  }
+  .jobs-banner-inner {
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .jobs-banner-title {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+  .jobs-banner-desc {
+    font-size: 0.88rem;
+    line-height: 1.8;
+    opacity: 0.7;
+  }
+  .jobs-banner-cta {
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: var(--ink);
+    opacity: 0.55;
+  }
+  .jobs-banner:hover .jobs-banner-cta { opacity: 1; }
 </style>

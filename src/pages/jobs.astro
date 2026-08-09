@@ -1,0 +1,116 @@
+---
+import Base from '../layouts/Base.astro';
+import JobCard from '../components/JobCard.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+
+let jobs: any[] = [];
+try {
+  const raw = await import('../data/jobs.json');
+  jobs = Array.isArray(raw.default) ? raw.default : [];
+} catch {
+  // jobs.json がまだない場合はスキップ
+}
+
+const base = import.meta.env.BASE_URL;
+---
+<Base title="実際にある仕事を見てみる">
+  <main class="main-content">
+    <div class="page-header">
+      <a href={base} class="back-link">← もどる</a>
+      <h1>実際にある仕事を、少し見てみる</h1>
+      <p class="page-desc">
+        ハローワークに<ruby>掲載<rt>けいさい</rt></ruby>されている求人の例です。<br />
+        気になったものがあれば、スタッフに声をかけてみてください。
+      </p>
+    </div>
+
+    {jobs.length > 0 ? (
+      <section class="section">
+        <div class="cards-grid">
+          {jobs.map((job: any) => (
+            <JobCard
+              jobNumber={job.job_number ?? ''}
+              title={job.title ?? ''}
+              company={job.company ?? ''}
+              location={job.location ?? ''}
+              employmentType={job.employment_type ?? ''}
+              hoursText={job.hours_text ?? ''}
+              detailUrl={job.detail_url ?? ''}
+              matchedConditions={job.matched_conditions ?? ''}
+            />
+          ))}
+        </div>
+        <p class="hw-note">
+          <a href="https://www.hellowork.mhlw.go.jp/" target="_blank" rel="noopener noreferrer">
+            ハローワークでほかの求人も探す →
+          </a>
+        </p>
+      </section>
+    ) : (
+      <div class="empty">
+        <p>現在、掲載できる求人情報がありません。</p>
+        <p>スタッフに相談してみてください。</p>
+      </div>
+    )}
+  </main>
+</Base>
+
+<style>
+  .main-content { padding: 0 24px 60px; }
+
+  .page-header {
+    max-width: 680px;
+    margin: 48px auto 48px;
+  }
+  .back-link {
+    display: inline-block;
+    font-size: 0.82rem;
+    color: var(--ink);
+    opacity: 0.55;
+    text-decoration: none;
+    margin-bottom: 20px;
+  }
+  .back-link:hover { opacity: 1; }
+
+  h1 {
+    font-size: clamp(1.3rem, 3.5vw, 1.7rem);
+    font-weight: 700;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .page-desc {
+    font-size: 0.9rem;
+    line-height: 2;
+    opacity: 0.75;
+  }
+
+  .section { max-width: 860px; margin: 0 auto; }
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  @media (min-width: 640px) {
+    .cards-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .hw-note {
+    margin-top: 24px;
+    font-size: 0.85rem;
+  }
+  .hw-note a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--rose);
+  }
+
+  .empty {
+    max-width: 680px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 48px 0;
+    font-size: 0.95rem;
+    line-height: 2;
+    opacity: 0.6;
+  }
+</style>
