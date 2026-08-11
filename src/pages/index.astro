@@ -73,7 +73,20 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       </div>
     </section>
 
-    <!-- 03 求人バナー（1クッション） -->
+    <!-- 03 求人票の見方バナー -->
+    <section class="section">
+      <a href={`${base}/guides/kyujinhyo/`} class="jobs-banner" aria-label="求人票の見方を知るページへ">
+        <div class="jobs-banner-inner">
+          <p class="jobs-banner-title">📄 求人票の見方を知っておく</p>
+          <p class="jobs-banner-desc">
+            はじめて見るときは、全部読もうとしなくて大丈夫です。よく見る項目から少しずつ確認できます。
+          </p>
+          <span class="jobs-banner-cta">見てみる →</span>
+        </div>
+      </a>
+    </section>
+
+    <!-- 04 求人バナー（1クッション） -->
     <section class="section">
       <a href={`${base}/jobs/`} class="jobs-banner" aria-label="実際にある仕事を見てみるページへ">
         <div class="jobs-banner-inner">

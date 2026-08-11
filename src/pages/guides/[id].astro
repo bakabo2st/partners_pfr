@@ -24,6 +24,51 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     <article class="guide-body prose">
       <Content />
     </article>
+
+    {entry.data.images && entry.data.images.length > 0 && (
+      <>
+      <div class="guide-images">
+        <h2 class="guide-images-title">参考：実際の求人票の例</h2>
+        <p class="guide-images-note">画像はタップすると拡大できます。</p>
+        {entry.data.images.map(img => (
+          <figure class="guide-figure">
+            <button type="button" class="guide-figure-btn" data-full={`${base}/guides/${img.src}`} data-alt={img.alt}>
+              <img src={`${base}/guides/${img.src}`} alt={img.alt} loading="lazy" />
+              <span class="guide-figure-hint">🔍 拡大して見る</span>
+            </button>
+          </figure>
+        ))}
+      </div>
+
+      <dialog class="lightbox" id="guideLightbox">
+        <button type="button" class="lightbox-close" id="lightboxClose" aria-label="閉じる">✕</button>
+        <img id="lightboxImg" src="" alt="" />
+      </dialog>
+
+      <script>
+        const dialog = document.getElementById('guideLightbox') as HTMLDialogElement | null;
+        const lightboxImg = document.getElementById('lightboxImg') as HTMLImageElement | null;
+        const closeBtn = document.getElementById('lightboxClose');
+
+        if (dialog && lightboxImg && closeBtn) {
+          document.querySelectorAll<HTMLButtonElement>('.guide-figure-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              lightboxImg.src = btn.dataset.full ?? '';
+              lightboxImg.alt = btn.dataset.alt ?? '';
+              dialog.showModal();
+            });
+          });
+
+          closeBtn.addEventListener('click', () => dialog.close());
+
+          // 背景（::backdrop 相当）クリックで閉じる
+          dialog.addEventListener('click', (e) => {
+            if (e.target === dialog) dialog.close();
+          });
+        }
+      </script>
+      </>
+    )}
   </main>
 </Base>
 
@@ -68,4 +113,98 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     margin-bottom: 16px;
   }
   .prose li { margin-bottom: 6px; }
+
+  /* 参考画像 */
+  .guide-images {
+    max-width: 860px;
+    margin: 48px auto 0;
+  }
+  .guide-images-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  .guide-images-note {
+    font-size: 0.82rem;
+    opacity: 0.6;
+    margin-bottom: 16px;
+  }
+  .guide-figure {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+  .guide-figure-btn {
+    display: block;
+    width: 100%;
+    position: relative;
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 0;
+    cursor: zoom-in;
+    font: inherit;
+  }
+  .guide-figure-btn img {
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    display: block;
+  }
+  .guide-figure-hint {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    background: rgba(72, 56, 64, 0.75);
+    color: #fff;
+    font-size: 0.78rem;
+    padding: 5px 12px;
+    border-radius: 20px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .guide-figure-btn:hover .guide-figure-hint,
+  .guide-figure-btn:focus-visible .guide-figure-hint {
+    opacity: 1;
+  }
+
+  /* ライトボックス */
+  .lightbox {
+    border: none;
+    background: transparent;
+    padding: 0;
+    max-width: 95vw;
+    max-height: 95vh;
+  }
+  .lightbox::backdrop {
+    background: rgba(40, 30, 34, 0.85);
+  }
+  .lightbox img {
+    display: block;
+    max-width: 95vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+  .lightbox-close {
+    position: fixed;
+    top: 20px;
+    right: 24px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--ink);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .lightbox-close:hover { background: #fff; }
 </style>
